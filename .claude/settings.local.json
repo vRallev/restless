@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(chmod:*)",
+      "Bash(./gradlew runDebugExecutableNative:*)",
+      "WebSearch",
+      "WebFetch(domain:plugins.gradle.org)",
+      "Bash(./gradlew ktfmtCheck:*)",
+      "Bash(./gradlew ktfmtFormat:*)",
+      "Bash(./gradlew compileKotlinNative:*)",
+      "WebFetch(domain:zacsweers.github.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}
