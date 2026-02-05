@@ -36,7 +36,7 @@ kotlin {
 tasks.register<Copy>("assembleApp") {
   dependsOn("linkReleaseExecutableNative")
 
-  from("build/bin/native/releaseExecutable/screen-on-app.kexe") {
+  from("build/bin/native/releaseExecutable/screen-on.kexe") {
     into("MacOS")
     rename { "ScreenOn" }
     filePermissions { unix("755") }
