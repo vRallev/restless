@@ -1,1 +1,1 @@
-rootProject.name = "screen-on"
+rootProject.name = "restless"

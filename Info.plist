@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>ScreenOn</string>
+    <string>Restless</string>
     <key>CFBundleDisplayName</key>
-    <string>ScreenOn</string>
+    <string>Restless</string>
     <key>CFBundleIdentifier</key>
-    <string>dev.ralf.screen</string>
+    <string>dev.ralf.restless</string>
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleExecutable</key>
-    <string>ScreenOn</string>
+    <string>Restless</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSUIElement</key>

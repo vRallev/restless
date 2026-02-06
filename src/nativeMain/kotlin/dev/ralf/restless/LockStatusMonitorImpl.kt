@@ -1,4 +1,4 @@
-package dev.ralf.screen
+package dev.ralf.restless
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -35,15 +35,15 @@ class LockStatusMonitorImpl : LockStatusMonitor {
 
     center.addObserver(
       observer = observer,
-      selector = NSSelectorFromString("onScreenLocked:"),
-      name = SCREEN_LOCKED,
+      selector = NSSelectorFromString("onDisplayLocked:"),
+      name = DISPLAY_LOCKED,
       `object` = null,
     )
 
     center.addObserver(
       observer = observer,
-      selector = NSSelectorFromString("onScreenUnlocked:"),
-      name = SCREEN_UNLOCKED,
+      selector = NSSelectorFromString("onDisplayUnlocked:"),
+      name = DISPLAY_UNLOCKED,
       `object` = null,
     )
 
@@ -58,8 +58,8 @@ class LockStatusMonitorImpl : LockStatusMonitor {
   }
 
   private companion object {
-    const val SCREEN_LOCKED = "com.apple.screenIsLocked"
-    const val SCREEN_UNLOCKED = "com.apple.screenIsUnlocked"
+    const val DISPLAY_LOCKED = "com.apple.screenIsLocked"
+    const val DISPLAY_UNLOCKED = "com.apple.screenIsUnlocked"
   }
 
   @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
@@ -69,14 +69,14 @@ class LockStatusMonitorImpl : LockStatusMonitor {
   ) : NSObject() {
 
     @ObjCAction
-    fun onScreenLocked(notification: NSNotification?) {
-      println("DEBUG: Screen locked")
+    fun onDisplayLocked(notification: NSNotification?) {
+      println("DEBUG: Display locked")
       onLocked()
     }
 
     @ObjCAction
-    fun onScreenUnlocked(notification: NSNotification?) {
-      println("DEBUG: Screen unlocked")
+    fun onDisplayUnlocked(notification: NSNotification?) {
+      println("DEBUG: Display unlocked")
       onUnlocked()
     }
   }

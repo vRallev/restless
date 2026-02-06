@@ -13,7 +13,7 @@ repositories {
 ktfmt { googleStyle() }
 
 kotlin {
-  macosArm64("native") { binaries { executable { entryPoint = "dev.ralf.screen.main" } } }
+  macosArm64("native") { binaries { executable { entryPoint = "dev.ralf.restless.main" } } }
 
   sourceSets {
     nativeMain {
@@ -36,19 +36,19 @@ kotlin {
 tasks.register<Copy>("assembleApp") {
   dependsOn("linkReleaseExecutableNative")
 
-  from("build/bin/native/releaseExecutable/screen-on.kexe") {
+  from("build/bin/native/releaseExecutable/restless.kexe") {
     into("MacOS")
-    rename { "ScreenOn" }
+    rename { "Restless" }
     filePermissions { unix("755") }
   }
   from("Info.plist")
-  into(layout.buildDirectory.dir("ScreenOn.app/Contents"))
+  into(layout.buildDirectory.dir("Restless.app/Contents"))
 }
 
 tasks.register<Exec>("packageApp") {
   dependsOn("assembleApp")
 
-  val appPath = layout.buildDirectory.file("ScreenOn.app").get().asFile.absolutePath
+  val appPath = layout.buildDirectory.file("Restless.app").get().asFile.absolutePath
   commandLine("codesign", "--force", "--deep", "--sign", "-", appPath)
 
   doLast { println("Created and signed $appPath") }

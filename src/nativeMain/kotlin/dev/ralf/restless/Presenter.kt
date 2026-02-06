@@ -1,4 +1,4 @@
-package dev.ralf.screen
+package dev.ralf.restless
 
 import androidx.compose.runtime.Composable
 

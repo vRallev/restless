@@ -1,4 +1,4 @@
-package dev.ralf.screen
+package dev.ralf.restless
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

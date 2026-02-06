@@ -1,4 +1,4 @@
-package dev.ralf.screen
+package dev.ralf.restless
 
 interface MenuItemManager {
   fun updateTitle(title: String)

@@ -1,4 +1,4 @@
-package dev.ralf.screen
+package dev.ralf.restless
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding

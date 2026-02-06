@@ -1,4 +1,4 @@
-package dev.ralf.screen
+package dev.ralf.restless
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -57,7 +57,7 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
       cancelItem = cancelMenuItem
 
       // About item
-      val aboutItem = NSMenuItem("About ScreenOn", NSSelectorFromString("openAbout"), "")
+      val aboutItem = NSMenuItem("About Restless", NSSelectorFromString("openAbout"), "")
       menu.addItem(aboutItem)
 
       // Separator (always visible, separates Cancel from Exit)
@@ -72,7 +72,7 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
         StatusBarActionHandler(
           onCancel = { modeController.cancelManualMode() },
           onAbout = {
-            val url = NSURL.URLWithString("https://github.com/vRallev/screen-on")
+            val url = NSURL.URLWithString("https://github.com/vRallev/restless")
             if (url != null) {
               NSWorkspace.sharedWorkspace.openURL(url)
             }

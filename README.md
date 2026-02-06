@@ -1,25 +1,25 @@
-# ScreenOn
+# Restless
 
-A macOS menu bar app that keeps your screen awake. Built with Kotlin/Native.
+A macOS menu bar app that keeps your Mac awake. Built with Kotlin/Native.
 
-**GitHub:** https://github.com/vRallev/screen-on
+**GitHub:** https://github.com/vRallev/restless
 
 ## What It Does
 
-ScreenOn prevents your Mac from sleeping by running the `caffeinate` command in the background. It displays a countdown timer in the menu bar showing how much
+Restless prevents your Mac from sleeping by running the `caffeinate` command in the background. It displays a countdown timer in the menu bar showing how much
 time remains.
 
 The app has two modes:
 
 ### Automatic Mode
 
-The app automatically keeps your screen on when **all** of these conditions are met:
+The app automatically keeps your Mac awake when **all** of these conditions are met:
 
 - You are **idle** (no mouse/keyboard input for 10+ seconds)
 - Your Mac is **on charger** (AC power)
-- Your screen is **not locked**
+- Your display is **not locked**
 
-When triggered, it starts a **2-hour timer**. If any condition changes (you move the mouse, unplug the charger, or lock the screen), the timer stops and resets.
+When triggered, it starts a **2-hour timer**. If any condition changes (you move the mouse, unplug the charger, or lock the display), the timer stops and resets.
 
 ### Manual Mode
 
@@ -31,7 +31,7 @@ You can manually control the timer by clicking the menu bar item:
 In manual mode:
 
 - The timer shows a **▶** prefix (e.g., `▶ 02:30`)
-- The timer keeps running even if you move the mouse, unplug, or lock the screen
+- The timer keeps running even if you move the mouse, unplug, or lock the display
 - Click **Cancel** in the menu to stop the timer and return to automatic mode
 
 ### Menu Items
@@ -39,7 +39,7 @@ In manual mode:
 Right-click the menu bar item to access:
 
 - **Cancel** - Stop the timer and return to automatic mode (only visible in manual mode)
-- **About ScreenOn** - Opens the GitHub repository
+- **About Restless** - Opens the GitHub repository
 - **Exit** - Quit the application
 
 ### Visual Indicators
@@ -85,7 +85,7 @@ Builds and runs the app directly. Useful during development.
 ./gradlew packageApp
 ```
 
-Creates a signed macOS application bundle at `build/ScreenOn.app`.
+Creates a signed macOS application bundle at `build/Restless.app`.
 
 ### Format Code
 
@@ -104,20 +104,20 @@ Formats all Kotlin code using ktfmt (Google style).
 
 2. Copy to Applications:
    ```bash
-   cp -r build/ScreenOn.app /Applications/
+   cp -r build/Restless.app /Applications/
    ```
 
 3. Launch the app:
-    - Double-click `/Applications/ScreenOn.app`
+    - Double-click `/Applications/Restless.app`
     - If macOS blocks it: Right-click → Open → Open
 
 ## Auto-Launch on Login
 
-To start ScreenOn automatically when you log in:
+To start Restless automatically when you log in:
 
 1. Open **System Settings**
 2. Go to **General** → **Login Items**
-3. Click **+** and select `ScreenOn.app`
+3. Click **+** and select `Restless.app`
 
 ## How It Works
 
