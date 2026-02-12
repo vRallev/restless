@@ -1,11 +1,11 @@
 [versions]
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 ktfmt = "0.25.0"
-coroutines = "1.9.0"
-metro = "0.10.2"
+coroutines = "1.10.2"
+metro = "0.10.3"
 molecule = "2.2.0"
 assertk = "0.28.1"
-turbine = "1.2.0"
+turbine = "1.2.1"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
