@@ -23,3 +23,9 @@ local.properties
 
 # Steve Jobs
 .DS_Store
+
+# Entire
+tmp/
+settings.local.json
+metadata/
+logs/
