@@ -10,6 +10,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -157,6 +158,61 @@ class RootPresenterIntegrationTest {
   }
 
   @Test
+  fun `expired manual mode stays manual while auto conditions are still met`() = runTest {
+    val testEnv =
+      createTestEnvironment(initialOnCharger = true, initialIdle = true, initialLocked = false)
+
+    moleculeFlow(RecompositionMode.Immediate) { testEnv.presenter.present() }
+      .test {
+        skipItems(1)
+        advanceTimeBy(100)
+
+        testEnv.modeController.onStatusBarClick()
+        advanceTimeBy(100)
+
+        testEnv.timer.stop()
+        testEnv.timer.setTime(0.seconds)
+        advanceTimeBy(100)
+
+        val model = expectMostRecentItem()
+        assertThat(model.title).isEqualTo("▶ 00:00")
+        assertThat(model.isManualMode).isTrue()
+
+        cancelAndIgnoreRemainingEvents()
+      }
+  }
+
+  @Test
+  fun `expired manual mode returns to automatic when activity resumes`() = runTest {
+    val testEnv =
+      createTestEnvironment(initialOnCharger = true, initialIdle = true, initialLocked = false)
+
+    moleculeFlow(RecompositionMode.Immediate) { testEnv.presenter.present() }
+      .test {
+        skipItems(1)
+        advanceTimeBy(100)
+
+        testEnv.modeController.onStatusBarClick()
+        advanceTimeBy(100)
+        assertThat(expectMostRecentItem().isManualMode).isTrue()
+
+        testEnv.timer.stop()
+        testEnv.timer.setTime(0.seconds)
+        advanceTimeBy(100)
+        assertThat(expectMostRecentItem().isManualMode).isTrue()
+
+        testEnv.idleMonitor.setIdle(false)
+        advanceTimeBy(100)
+
+        val model = expectMostRecentItem()
+        assertThat(model.title).isEqualTo("00:00")
+        assertThat(model.isManualMode).isFalse()
+
+        cancelAndIgnoreRemainingEvents()
+      }
+  }
+
+  @Test
   fun `cancel returns to automatic mode`() = runTest {
     val testEnv = createTestEnvironment()
 
@@ -267,6 +323,7 @@ class RootPresenterIntegrationTest {
     return TestEnvironment(
       presenter = presenter,
       modeController = modeController,
+      timer = timer,
       caffeinate = caffeinate,
       powerMonitor = powerMonitor,
       idleMonitor = idleMonitor,
@@ -277,6 +334,7 @@ class RootPresenterIntegrationTest {
   private class TestEnvironment(
     val presenter: RootPresenter,
     val modeController: ModeControllerImpl,
+    val timer: TimerImpl,
     val caffeinate: FakeCaffeinate,
     val powerMonitor: FakePowerStatusMonitor,
     val idleMonitor: FakeIdleStatusMonitor,
