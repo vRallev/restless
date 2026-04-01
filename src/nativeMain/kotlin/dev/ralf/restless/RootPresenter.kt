@@ -68,6 +68,24 @@ class RootPresenter(
       // In MANUAL mode, do nothing - timer is controlled by clicks
     }
 
+    // When a manual timer has already expired, leave manual mode only after some
+    // external state changes again. This avoids immediately re-triggering
+    // automatic mode while the Mac is still idle and about to sleep.
+    LaunchedEffect(isIdle, isOnCharger, isLocked, mode, timeLeft, isRunning) {
+      if (
+        mode == AppMode.MANUAL &&
+          timeLeft == 0.seconds &&
+          !isRunning &&
+          (!isIdle || !isOnCharger || isLocked)
+      ) {
+        println(
+          "DEBUG: Resetting expired manual mode " +
+            "(idle=$isIdle, onCharger=$isOnCharger, locked=$isLocked)",
+        )
+        modeController.cancelManualMode()
+      }
+    }
+
     // Log timer updates
     LaunchedEffect(timeLeft, isRunning, mode) {
       println("DEBUG: Timer update - timeLeft=$timeLeft, isRunning=$isRunning, mode=$mode")

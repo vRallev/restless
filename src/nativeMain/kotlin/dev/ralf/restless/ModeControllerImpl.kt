@@ -23,11 +23,12 @@ class ModeControllerImpl(private val timer: Timer, private val caffeinate: Caffe
     val currentTime = timer.timeLeft.value
     val newTime = (currentTime + 1.hours).coerceAtMost(24.hours)
 
+    timer.setTime(newTime)
+
     if (_mode.value == AppMode.AUTOMATIC) {
       _mode.value = AppMode.MANUAL
     }
 
-    timer.setTime(newTime)
     if (!timer.isRunning.value) {
       timer.start()
     }
