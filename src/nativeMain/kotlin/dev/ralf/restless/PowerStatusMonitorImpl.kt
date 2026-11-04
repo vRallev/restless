@@ -10,7 +10,6 @@ import kotlinx.cinterop.staticCFunction
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import platform.CoreFoundation.CFArrayGetCount
 import platform.CoreFoundation.CFArrayGetValueAtIndex
 import platform.CoreFoundation.CFDictionaryGetValue
@@ -37,9 +36,8 @@ import platform.IOKit.IOPSNotificationCreateRunLoopSource
 @ContributesBinding(AppScope::class)
 @OptIn(ExperimentalForeignApi::class)
 class PowerStatusMonitorImpl : PowerStatusMonitor {
-  private val _isOnCharger = MutableStateFlow(checkIsOnAcPower())
-
-  override val isOnCharger: StateFlow<Boolean> = _isOnCharger.asStateFlow()
+  override val isOnCharger: StateFlow<Boolean>
+    field = MutableStateFlow(checkIsOnAcPower())
 
   override suspend fun monitor() {
     instance = this
@@ -67,7 +65,7 @@ class PowerStatusMonitorImpl : PowerStatusMonitor {
   private fun onPowerSourceChanged() {
     val newValue = checkIsOnAcPower()
     println("DEBUG: Power source changed, onAcPower = $newValue")
-    _isOnCharger.value = newValue
+    isOnCharger.value = newValue
   }
 
   private fun checkIsOnAcPower(): Boolean {

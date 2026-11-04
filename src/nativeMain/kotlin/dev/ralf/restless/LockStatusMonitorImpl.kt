@@ -10,7 +10,6 @@ import kotlinx.cinterop.ObjCAction
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import platform.Foundation.NSDistributedNotificationCenter
 import platform.Foundation.NSNotification
 import platform.Foundation.NSSelectorFromString
@@ -21,13 +20,13 @@ import platform.darwin.NSObject
 @ContributesBinding(AppScope::class)
 @OptIn(ExperimentalForeignApi::class)
 class LockStatusMonitorImpl : LockStatusMonitor {
-  private val _isLocked = MutableStateFlow(false)
-  override val isLocked: StateFlow<Boolean> = _isLocked.asStateFlow()
+  override val isLocked: StateFlow<Boolean>
+    field = MutableStateFlow(false)
 
   private val observer =
     LockStatusObserver(
-      onLocked = { _isLocked.value = true },
-      onUnlocked = { _isLocked.value = false },
+      onLocked = { isLocked.value = true },
+      onUnlocked = { isLocked.value = false },
     )
 
   override suspend fun monitor() {

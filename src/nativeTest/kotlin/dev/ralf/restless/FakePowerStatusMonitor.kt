@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FakePowerStatusMonitor(initialValue: Boolean = false) : PowerStatusMonitor {
-  private val _isOnCharger = MutableStateFlow(initialValue)
-  override val isOnCharger: StateFlow<Boolean> = _isOnCharger
+  override val isOnCharger: StateFlow<Boolean>
+    field = MutableStateFlow(initialValue)
 
   fun setOnCharger(value: Boolean) {
-    _isOnCharger.value = value
+    isOnCharger.value = value
   }
 
   override suspend fun monitor() = Unit
