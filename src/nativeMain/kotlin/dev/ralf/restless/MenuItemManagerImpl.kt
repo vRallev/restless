@@ -10,8 +10,7 @@ import kotlinx.cinterop.ObjCAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import platform.AppKit.NSApplication
-import platform.AppKit.NSEvent
-import platform.AppKit.NSEventMaskLeftMouseDown
+import platform.AppKit.NSClickGestureRecognizer
 import platform.AppKit.NSMenu
 import platform.AppKit.NSMenuItem
 import platform.AppKit.NSStatusBar
@@ -30,9 +29,8 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
   private lateinit var statusItem: NSStatusItem
   private var cancelItem: NSMenuItem? = null
 
-  // Store references to prevent garbage collection
-  private var actionHandler: StatusBarActionHandler? = null
-  private var eventMonitor: Any? = null
+  // AppKit holds action targets weakly.
+  private lateinit var actionHandler: StatusBarActionHandler
 
   override fun updateTitle(title: String) {
     if (::statusItem.isInitialized) {
@@ -67,9 +65,18 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
       val exitItem = NSMenuItem("Exit", NSSelectorFromString("exitApp"), "")
       menu.addItem(exitItem)
 
-      // Create action handler for menu items
       actionHandler =
         StatusBarActionHandler(
+          onPrimaryClick = { modeController.onStatusBarClick() },
+          onSecondaryClick = {
+            // An attached status item menu takes over primary clicks.
+            statusItem.menu = menu
+            try {
+              statusItem.button?.performClick(null)
+            } finally {
+              statusItem.menu = null
+            }
+          },
           onCancel = { modeController.cancelManualMode() },
           onAbout = {
             val url = NSURL.URLWithString("https://github.com/vRallev/restless")
@@ -85,39 +92,38 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
       aboutItem.target = actionHandler
       exitItem.target = actionHandler
 
-      // Assign menu to status item - this handles right-click automatically
-      statusItem.menu = menu
-
-      // Set up event monitor to intercept left-clicks on the status bar button
-      eventMonitor =
-        NSEvent.addLocalMonitorForEventsMatchingMask(NSEventMaskLeftMouseDown) { event ->
-          if (event != null && isClickOnStatusItem(event)) {
-            modeController.onStatusBarClick()
-            null // Consume the event (don't show menu on left-click)
-          } else {
-            event // Pass through
-          }
-        }
+      statusItem.button?.apply {
+        target = actionHandler
+        action = NSSelectorFromString("addHour")
+        val rightClick =
+          NSClickGestureRecognizer(
+            target = actionHandler,
+            action = NSSelectorFromString("showMenu"),
+          )
+        rightClick.buttonMask = 0x2uL
+        addGestureRecognizer(rightClick)
+      }
     }
-  }
-
-  private fun isClickOnStatusItem(event: NSEvent): Boolean {
-    val button = statusItem.button ?: return false
-    val window = button.window ?: return false
-
-    // Check if the event is in our status item's window
-    if (event.window != window) return false
-
-    // The event is in our status bar button's window, so it's clicking on us
-    return true
   }
 
   @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
   private class StatusBarActionHandler(
+    private val onPrimaryClick: () -> Unit,
+    private val onSecondaryClick: () -> Unit,
     private val onCancel: () -> Unit,
     private val onAbout: () -> Unit,
     private val onExit: () -> Unit,
   ) : NSObject() {
+
+    @ObjCAction
+    fun addHour() {
+      onPrimaryClick()
+    }
+
+    @ObjCAction
+    fun showMenu() {
+      onSecondaryClick()
+    }
 
     @ObjCAction
     fun cancelAction() {
