@@ -8,7 +8,6 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 @Inject
 @SingleIn(AppScope::class)
@@ -16,8 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class ModeControllerImpl(private val timer: Timer, private val caffeinate: Caffeinate) :
   ModeController {
 
-  private val _mode = MutableStateFlow(AppMode.AUTOMATIC)
-  override val mode: StateFlow<AppMode> = _mode.asStateFlow()
+  override val mode: StateFlow<AppMode>
+    field = MutableStateFlow(AppMode.AUTOMATIC)
 
   override fun onStatusBarClick() {
     val currentTime = timer.timeLeft.value
@@ -25,8 +24,8 @@ class ModeControllerImpl(private val timer: Timer, private val caffeinate: Caffe
 
     timer.setTime(newTime)
 
-    if (_mode.value == AppMode.AUTOMATIC) {
-      _mode.value = AppMode.MANUAL
+    if (mode.value == AppMode.AUTOMATIC) {
+      mode.value = AppMode.MANUAL
     }
 
     if (!timer.isRunning.value) {
@@ -38,7 +37,7 @@ class ModeControllerImpl(private val timer: Timer, private val caffeinate: Caffe
   }
 
   override fun cancelManualMode() {
-    _mode.value = AppMode.AUTOMATIC
+    mode.value = AppMode.AUTOMATIC
     timer.stop()
     timer.setTime(Duration.ZERO)
     caffeinate.stop()

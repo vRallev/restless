@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FakeLockStatusMonitor(initialValue: Boolean = false) : LockStatusMonitor {
-  private val _isLocked = MutableStateFlow(initialValue)
-  override val isLocked: StateFlow<Boolean> = _isLocked
+  override val isLocked: StateFlow<Boolean>
+    field = MutableStateFlow(initialValue)
 
   fun setLocked(value: Boolean) {
-    _isLocked.value = value
+    isLocked.value = value
   }
 
   override suspend fun monitor() = Unit

@@ -80,7 +80,7 @@ class RootPresenter(
       ) {
         println(
           "DEBUG: Resetting expired manual mode " +
-            "(idle=$isIdle, onCharger=$isOnCharger, locked=$isLocked)",
+            "(idle=$isIdle, onCharger=$isOnCharger, locked=$isLocked)"
         )
         modeController.cancelManualMode()
       }

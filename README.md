@@ -50,8 +50,8 @@ Right-click the menu bar item to access:
 
 ## Requirements
 
-- macOS 11.0 or later (Apple Silicon)
-- JDK 17+ (for building)
+- Apple Silicon Mac with macOS 12 or later
+- Xcode and JDK 21 or later to build (CI uses JDK 25)
 
 ## Gradle Tasks
 

@@ -12,7 +12,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @Inject
@@ -21,34 +20,35 @@ import kotlinx.coroutines.launch
 class TimerImpl(private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)) : Timer {
   private var countdownJob: Job? = null
 
-  private val _timeLeft = MutableStateFlow(Duration.ZERO)
-  override val timeLeft: StateFlow<Duration> = _timeLeft.asStateFlow()
+  override val timeLeft: StateFlow<Duration>
+    field = MutableStateFlow(Duration.ZERO)
 
-  private val _isRunning = MutableStateFlow(false)
-  override val isRunning: StateFlow<Boolean> = _isRunning.asStateFlow()
+  override val isRunning: StateFlow<Boolean>
+    field = MutableStateFlow(false)
 
   override fun start() {
-    if (_isRunning.value) return
+    if (isRunning.value) {
+      return
+    }
 
-    _isRunning.value = true
-    countdownJob =
-      scope.launch {
-        while (_timeLeft.value > Duration.ZERO) {
-          delay(1.seconds)
-          _timeLeft.value -= 1.seconds
-        }
-        println("DEBUG: Timer reached 0")
-        _isRunning.value = false
+    isRunning.value = true
+    countdownJob = scope.launch {
+      while (timeLeft.value > Duration.ZERO) {
+        delay(1.seconds)
+        timeLeft.value -= 1.seconds
       }
+      println("DEBUG: Timer reached 0")
+      isRunning.value = false
+    }
   }
 
   override fun stop() {
     countdownJob?.cancel()
     countdownJob = null
-    _isRunning.value = false
+    isRunning.value = false
   }
 
   override fun setTime(duration: Duration) {
-    _timeLeft.value = duration
+    timeLeft.value = duration
   }
 }

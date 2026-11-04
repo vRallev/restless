@@ -10,19 +10,16 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import platform.CoreGraphics.CGEventSourceSecondsSinceLastEventType
 import platform.CoreGraphics.kCGEventSourceStateCombinedSessionState
-
-private const val kCGAnyInputEventType = 0xFFFFFFFFu
 
 @Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 class IdleStatusMonitorImpl : IdleStatusMonitor {
-  private val _isIdle = MutableStateFlow(false)
-  override val isIdle: StateFlow<Boolean> = _isIdle.asStateFlow()
+  override val isIdle: StateFlow<Boolean>
+    field = MutableStateFlow(false)
 
   override suspend fun monitor(idleThreshold: Duration) {
     println("DEBUG: Idle status monitoring started (threshold: $idleThreshold)")
@@ -31,13 +28,13 @@ class IdleStatusMonitorImpl : IdleStatusMonitor {
       while (currentCoroutineContext().isActive) {
         val idleSeconds =
           CGEventSourceSecondsSinceLastEventType(
-            kCGEventSourceStateCombinedSessionState,
-            kCGAnyInputEventType,
+            stateID = kCGEventSourceStateCombinedSessionState,
+            eventType = kCGAnyInputEventType,
           )
         val newIsIdle = idleSeconds >= idleThreshold.inWholeSeconds
 
-        if (_isIdle.value != newIsIdle) {
-          _isIdle.value = newIsIdle
+        if (isIdle.value != newIsIdle) {
+          isIdle.value = newIsIdle
           println("DEBUG: Idle state changed, isIdle = $newIsIdle (idle for ${idleSeconds}s)")
         }
 
@@ -46,5 +43,9 @@ class IdleStatusMonitorImpl : IdleStatusMonitor {
     } finally {
       println("DEBUG: Idle status monitoring stopped")
     }
+  }
+
+  private companion object {
+    const val kCGAnyInputEventType = 0xFFFFFFFFu
   }
 }
