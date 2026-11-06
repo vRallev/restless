@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
@@ -23,6 +23,7 @@ class RootPresenter(
   private val timer: Timer,
   private val caffeinate: Caffeinate,
   private val modeController: ModeController,
+  private val settings: Settings,
 ) : Presenter {
 
   @Composable
@@ -54,7 +55,7 @@ class RootPresenter(
       if (mode == AppMode.AUTOMATIC) {
         if (isIdle && isOnCharger && !isLocked) {
           println("DEBUG: Starting timer (idle=$isIdle, onCharger=$isOnCharger, locked=$isLocked)")
-          val duration = 2.hours
+          val duration = settings.powerTimeoutMinutes.minutes
           timer.setTime(duration)
           timer.start()
           caffeinate.start(duration)

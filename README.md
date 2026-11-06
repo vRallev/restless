@@ -19,7 +19,7 @@ The app automatically keeps your Mac awake when **all** of these conditions are 
 - Your Mac is **on charger** (AC power)
 - Your display is **not locked**
 
-When triggered, it starts a **2-hour timer**. If any condition changes (you move the mouse, unplug the charger, or lock the display), the timer stops and resets.
+The timer runs for **2 hours** by default. If any condition changes (you move the mouse, unplug the charger, or lock the display), the timer stops and resets.
 
 ### Manual Mode
 
@@ -40,6 +40,7 @@ Right-click the menu bar item to access:
 
 - **Cancel** - Stop the timer and return to automatic mode (only visible in manual mode)
 - **About Restless** - Opens the GitHub repository
+- **Settings…** - Set the automatic timeout on power (1 to 1440 minutes)
 - **Exit** - Quit the application
 
 ### Visual Indicators

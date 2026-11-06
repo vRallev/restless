@@ -10,17 +10,21 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
+import platform.Foundation.NSUUID
+import platform.Foundation.NSUserDefaults
 
 /**
  * Integration tests for RootPresenter with real ModeController and Timer. Tests the full reactive
  * flow from state changes through presenter to model output.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalForeignApi::class)
 class RootPresenterIntegrationTest {
 
   @Test
@@ -59,6 +63,31 @@ class RootPresenterIntegrationTest {
 
         cancelAndIgnoreRemainingEvents()
       }
+  }
+
+  @Test
+  fun `automatic mode reads the saved timeout when the timer starts`() = runTest {
+    val suiteName = "dev.ralf.restless.test.${NSUUID().UUIDString}"
+    val defaults = NSUserDefaults(suiteName = suiteName)
+    try {
+      val testEnv = createTestEnvironment(initialOnCharger = true, settings = Settings(defaults))
+
+      moleculeFlow(RecompositionMode.Immediate) { testEnv.presenter.present() }
+        .test {
+          awaitItem()
+
+          Settings(NSUserDefaults(suiteName = suiteName)).powerTimeoutMinutes = 90L
+          testEnv.idleMonitor.setIdle(true)
+          advanceTimeBy(100)
+
+          assertThat(expectMostRecentItem().title).isEqualTo("01:30")
+          assertThat(testEnv.caffeinate.lastDuration).isEqualTo(90.minutes)
+
+          cancelAndIgnoreRemainingEvents()
+        }
+    } finally {
+      defaults.removePersistentDomainForName(suiteName)
+    }
   }
 
   @Test
@@ -302,6 +331,7 @@ class RootPresenterIntegrationTest {
     initialOnCharger: Boolean = false,
     initialIdle: Boolean = false,
     initialLocked: Boolean = false,
+    settings: Settings = Settings(NSUserDefaults(suiteName = NSUUID().UUIDString)),
   ): TestEnvironment {
     val powerMonitor = FakePowerStatusMonitor(initialOnCharger)
     val idleMonitor = FakeIdleStatusMonitor(initialIdle)
@@ -318,6 +348,7 @@ class RootPresenterIntegrationTest {
         timer = timer,
         caffeinate = caffeinate,
         modeController = modeController,
+        settings = settings,
       )
 
     return TestEnvironment(

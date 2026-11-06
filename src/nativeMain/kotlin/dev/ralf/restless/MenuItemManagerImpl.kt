@@ -25,7 +25,10 @@ import platform.darwin.NSObject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 @OptIn(ExperimentalForeignApi::class)
-class MenuItemManagerImpl(private val modeController: ModeController) : MenuItemManager {
+class MenuItemManagerImpl(
+  private val modeController: ModeController,
+  private val settingsWindow: SettingsWindow,
+) : MenuItemManager {
   private lateinit var statusItem: NSStatusItem
   private var cancelItem: NSMenuItem? = null
 
@@ -58,7 +61,14 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
       val aboutItem = NSMenuItem("About Restless", NSSelectorFromString("openAbout"), "")
       menu.addItem(aboutItem)
 
-      // Separator (always visible, separates Cancel from Exit)
+      val settingsItem =
+        NSMenuItem(
+          title = "Settings…",
+          action = NSSelectorFromString("openSettings"),
+          keyEquivalent = ",",
+        )
+      menu.addItem(settingsItem)
+
       menu.addItem(NSMenuItem.separatorItem())
 
       // Exit item
@@ -84,12 +94,14 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
               NSWorkspace.sharedWorkspace.openURL(url)
             }
           },
+          onSettings = { settingsWindow.show() },
           onExit = { NSApplication.sharedApplication.terminate(null) },
         )
 
       // Set targets for menu items
       cancelMenuItem.target = actionHandler
       aboutItem.target = actionHandler
+      settingsItem.target = actionHandler
       exitItem.target = actionHandler
 
       statusItem.button?.apply {
@@ -112,6 +124,7 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
     private val onSecondaryClick: () -> Unit,
     private val onCancel: () -> Unit,
     private val onAbout: () -> Unit,
+    private val onSettings: () -> Unit,
     private val onExit: () -> Unit,
   ) : NSObject() {
 
@@ -133,6 +146,11 @@ class MenuItemManagerImpl(private val modeController: ModeController) : MenuItem
     @ObjCAction
     fun openAbout() {
       onAbout()
+    }
+
+    @ObjCAction
+    fun openSettings() {
+      onSettings()
     }
 
     @ObjCAction
