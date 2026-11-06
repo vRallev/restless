@@ -19,9 +19,15 @@ import platform.AppKit.NSUserInterfaceLayoutOrientationVertical
 import platform.AppKit.NSWindow
 import platform.AppKit.NSWindowStyleMaskClosable
 import platform.AppKit.NSWindowStyleMaskTitled
+import platform.AppKit.bottomAnchor
 import platform.AppKit.currentEditor
 import platform.AppKit.labelWithString
+import platform.AppKit.leadingAnchor
 import platform.AppKit.textFieldWithString
+import platform.AppKit.topAnchor
+import platform.AppKit.trailingAnchor
+import platform.AppKit.translatesAutoresizingMaskIntoConstraints
+import platform.AppKit.widthAnchor
 import platform.Foundation.NSMakeRect
 import platform.Foundation.NSSelectorFromString
 import platform.darwin.NSObject
@@ -73,24 +79,26 @@ class SettingsWindow(private val settings: Settings) : NSObject() {
   private fun createWindow(): NSWindow {
     val settingsWindow =
       NSWindow(
-        contentRect = NSMakeRect(x = 0.0, y = 0.0, w = 360.0, h = 126.0),
-        styleMask = NSWindowStyleMaskTitled or NSWindowStyleMaskClosable,
-        backing = NSBackingStoreBuffered,
-        defer = false,
-      ).apply {
-        title = "Restless Settings"
-        releasedWhenClosed = false
-        center()
-      }
+          contentRect = NSMakeRect(x = 0.0, y = 0.0, w = 360.0, h = 126.0),
+          styleMask = NSWindowStyleMaskTitled or NSWindowStyleMaskClosable,
+          backing = NSBackingStoreBuffered,
+          defer = false,
+        )
+        .apply {
+          title = "Restless Settings"
+          releasedWhenClosed = false
+          center()
+        }
 
     val timeoutRow =
       NSStackView.stackViewWithViews(
-        listOf(
-          NSTextField.labelWithString("Automatic timeout on power:"),
-          timeoutField,
-          NSTextField.labelWithString("minutes"),
+          listOf(
+            NSTextField.labelWithString("Automatic timeout on power:"),
+            timeoutField,
+            NSTextField.labelWithString("minutes"),
+          )
         )
-      ).apply { alignment = NSLayoutAttributeFirstBaseline }
+        .apply { alignment = NSLayoutAttributeFirstBaseline }
 
     val form =
       NSStackView.stackViewWithViews(listOf(timeoutRow, messageLabel)).apply {
@@ -101,10 +109,11 @@ class SettingsWindow(private val settings: Settings) : NSObject() {
 
     val cancelButton =
       NSButton.buttonWithTitle(
-        title = "Cancel",
-        target = settingsWindow,
-        action = NSSelectorFromString("performClose:"),
-      ).apply { keyEquivalent = "\u001b" }
+          title = "Cancel",
+          target = settingsWindow,
+          action = NSSelectorFromString("performClose:"),
+        )
+        .apply { keyEquivalent = "\u001b" }
     val saveButton =
       NSButton.buttonWithTitle(title = "Save", target = this, action = NSSelectorFromString("save"))
         .apply { keyEquivalent = "\r" }
@@ -124,7 +133,10 @@ class SettingsWindow(private val settings: Settings) : NSObject() {
           anchor = content.trailingAnchor,
           constant = -20.0,
         ),
-        buttons.bottomAnchor.constraintEqualToAnchor(anchor = content.bottomAnchor, constant = -20.0),
+        buttons.bottomAnchor.constraintEqualToAnchor(
+          anchor = content.bottomAnchor,
+          constant = -20.0,
+        ),
       )
     )
     return settingsWindow
